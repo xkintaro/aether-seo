@@ -1,0 +1,129 @@
+<section id="assets-section" class="mt-6 glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-pink/20 flex items-center justify-center">
+            <i class="fa-solid fa-file-code text-neon-pink"></i>
+        </div>
+        <h2 class="text-xl font-bold">CSS & JS Files</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+            <h3 class="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                <i class="fa-brands fa-css3-alt text-neon-cyan"></i>
+                CSS Files ({{ data.results.network.assets.css.total }})
+                {% if data.results.network.assets.css.total > 0 %}
+                <span class="text-xs text-gray-500">Limit: {{
+                    data.results.network.assets.css.size_limit_kb
+                    }}KB</span>
+                {% endif %}
+            </h3>
+
+            {% if data.results.network.assets.css.total > 0 %}
+            <div class="flex items-center justify-between mb-2">
+                <div class="relative w-32">
+                    <input type="text" placeholder="Search CSS..."
+                        oninput="filterContainer('cssFilesList', 'div', this)"
+                        class="w-full bg-void/50 border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/50 transition-all">
+                </div>
+                <div class="flex items-center gap-2 text-xs sort-toolbar">
+                    <button class="text-gray-400 hover:text-neon-cyan transition-colors"
+                        onclick="sortContainer('cssFilesList', 'div', 'data-size', 'number', this)">
+                        Size <i class="fa-solid fa-sort ml-1"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-neon-cyan transition-colors"
+                        onclick="sortContainer('cssFilesList', 'div', 'data-url', 'string', this)">
+                        URL <i class="fa-solid fa-sort ml-1"></i>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="cssFilesList" class="space-y-2 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                {% for asset in data.results.network.assets.css.data %}
+                <div class="flex items-center justify-between p-3 rounded-lg bg-void/50 border border-white/5 hover:border-neon-cyan/30 transition-colors"
+                    data-size="{{ asset.size_bytes if asset.size_bytes is not none else 0 }}"
+                    data-url="{{ asset.href }}">
+                    <a href="{{ asset.full_url }}" target="_blank"
+                        class="text-sm font-mono text-gray-300 truncate max-w-xs hover:text-neon-cyan transition-colors flex items-center gap-2"
+                        title="Open CSS file">
+                        {{ asset.href }}
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500"></i>
+                    </a>
+                    <span
+                        class="flex-shrink-0 px-2 py-1 rounded text-xs font-mono
+                                {% if asset.is_oversized %}bg-neon-amber/20 text-neon-amber{% else %}bg-neon-green/20 text-neon-green{% endif %}">
+                        {{ asset.size_formatted if asset.size_formatted else 'N/A' }}
+                    </span>
+                </div>
+                {% else %}
+                <div
+                    class="flex flex-col items-center justify-center py-6 text-center bg-void/30 rounded-lg border border-white/5 border-dashed">
+                    <i class="fa-brands fa-css3-alt text-gray-600 text-lg mb-2"></i>
+                    <p class="text-gray-400 text-sm font-medium">No CSS Files</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <h3 class="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+                <i class="fa-brands fa-js text-neon-amber"></i>
+                JS Files ({{ data.results.network.assets.js.total }})
+                {% if data.results.network.assets.js.total > 0 %}
+                <span class="text-xs text-gray-500">Limit: {{
+                    data.results.network.assets.js.size_limit_kb
+                    }}KB</span>
+                {% endif %}
+            </h3>
+
+            {% if data.results.network.assets.js.total > 0 %}
+            <div class="flex items-center justify-between mb-2">
+                <div class="relative w-32">
+                    <input type="text" placeholder="Search JS..." oninput="filterContainer('jsFilesList', 'div', this)"
+                        class="w-full bg-void/50 border border-white/10 rounded px-2 py-1 text-xs text-gray-300 focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/50 transition-all">
+                </div>
+                <div class="flex items-center gap-2 text-xs sort-toolbar">
+                    <button class="text-gray-400 hover:text-neon-cyan transition-colors"
+                        onclick="sortContainer('jsFilesList', 'div', 'data-size', 'number', this)">
+                        Size <i class="fa-solid fa-sort ml-1"></i>
+                    </button>
+                    <button class="text-gray-400 hover:text-neon-cyan transition-colors"
+                        onclick="sortContainer('jsFilesList', 'div', 'data-url', 'string', this)">
+                        URL <i class="fa-solid fa-sort ml-1"></i>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="jsFilesList" class="space-y-2 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                {% for asset in data.results.network.assets.js.data %}
+                <div class="flex items-center justify-between p-3 rounded-lg bg-void/50 border border-white/5 hover:border-neon-amber/30 transition-colors"
+                    data-size="{{ asset.size_bytes if asset.size_bytes is not none else 0 }}"
+                    data-url="{{ asset.href }}">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <a href="{{ asset.full_url }}" target="_blank"
+                            class="text-sm font-mono text-gray-300 truncate max-w-xs hover:text-neon-amber transition-colors flex items-center gap-2"
+                            title="Open JS file">
+                            {{ asset.href }}
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500"></i>
+                        </a>
+                        {% if asset.async %}<span class="text-xs text-neon-cyan">async</span>{% endif %}
+                        {% if asset.defer %}<span class="text-xs text-neon-green">defer</span>{% endif
+                        %}
+                    </div>
+                    <span
+                        class="flex-shrink-0 px-2 py-1 rounded text-xs font-mono
+                                {% if asset.is_oversized %}bg-neon-amber/20 text-neon-amber{% else %}bg-neon-green/20 text-neon-green{% endif %}">
+                        {{ asset.size_formatted if asset.size_formatted else 'N/A' }}
+                    </span>
+                </div>
+                {% else %}
+                <div
+                    class="flex flex-col items-center justify-center py-6 text-center bg-void/30 rounded-lg border border-white/5 border-dashed">
+                    <i class="fa-brands fa-js text-gray-600 text-lg mb-2"></i>
+                    <p class="text-gray-400 text-sm font-medium">No JS Files</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>

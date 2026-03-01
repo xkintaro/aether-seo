@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Aether SEO - {{ domain }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+    <header class="glass border-b border-white/5 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="{{ app_title }}"
+                    class="w-8 h-8 object-contain">
+                <span class="text-xl font-bold gradient-text">{{ app_title }}</span>
+            </a>
+
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 glass rounded-lg px-4 py-2">
+                    <i class="fa-solid fa-globe text-neon-cyan"></i>
+                    <span class="font-mono text-sm text-gray-300">{{ domain }}</span>
+                    <button onclick="copyToClipboard('https://{{ domain }}', this)"
+                        class="text-gray-500 hover:text-neon-cyan transition-colors ml-1" title="Copy URL">
+                        <i class="fa-solid fa-copy text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-[1600px] mx-auto px-4 py-8">
+        {% if not data.success %}
+        <div class="glass rounded-3xl p-8 border border-neon-red/30 bg-neon-red/5 text-center">
+            <i class="fa-solid fa-circle-exclamation text-5xl text-neon-red mb-4"></i>
+            <h2 class="text-2xl font-bold mb-2">Analysis Failed</h2>
+            <p class="text-gray-400">{{ data.results.document.error }}</p>
+            <a href="/"
+                class="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-void-lighter rounded-lg hover:bg-void-light transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Go Back</span>
+            </a>
+        </div>
+        {% else %}
+        <div class="flex flex-col xl:flex-row items-start gap-6">
+            {% include 'partials/report_sidebar.html' %}
+            <div class="flex-1 w-full min-w-0">
+                {% include 'sections/report_score.html' %}
+                {% include 'sections/report_stats.html' %}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {% include 'sections/report_meta.html' %}
+                    {% include 'sections/report_content.html' %}
+                    {% include 'sections/report_headings.html' %}
+                    {% include 'sections/report_url.html' %}
+                    {% include 'sections/report_technical.html' %}
+                    {% include 'sections/report_ssl.html' %}
+                    {% include 'sections/report_security.html' %}
+                </div>
+                <div id="social-section" class="mb-6 scroll-mt-28">
+                    {% include 'components/social_preview_card.html' %}
+                </div>
+                <div id="accessibility-section" class="mb-6 scroll-mt-28">
+                    {% include 'components/accessibility_card.html' %}
+                </div>
+                {% include 'sections/report_media.html' %}
+                {% include 'sections/report_links.html' %}
+                {% include 'sections/report_assets.html' %}
+                {% include 'sections/report_sitemap.html' %}
+                {% include 'sections/report_hreflang.html' %}
+
+            </div>
+        </div>
+        {% endif %}
+    </main>
+    <footer class="py-6 text-center">
+        <div class="flex items-center justify-center gap-4 mb-3">
+            {% if social_github %}
+            <a href="{{ social_github }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-white transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-github text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_discord %}
+            <a href="{{ social_discord }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-[#5865F2] transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-discord text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_twitter %}
+            <a href="{{ social_twitter }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-[#1DA1F2] transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-twitter text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_instagram %}
+            <a href="{{ social_instagram }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-[#C13584] transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-instagram text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_youtube %}
+            <a href="{{ social_youtube }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-[#FF0000] transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-youtube text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_linkedin %}
+            <a href="{{ social_linkedin }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-[#0077B5] transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-linkedin text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_tiktok %}
+            <a href="{{ social_tiktok }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-white transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-tiktok text-lg"></i>
+            </a>
+            {% endif %}
+        </div>
+        <p class="text-gray-600 text-sm font-medium">{{ copyright_text }}</p>
+    </footer>
+
+</div>
+
+{% endblock %}
+
+{% include 'partials/report_scripts.html' %}

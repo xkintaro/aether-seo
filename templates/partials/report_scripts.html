@@ -1,0 +1,321 @@
+{% block scripts %}
+<script>
+
+    (function () {
+        'use strict';
+        const CONFIG = {
+            TOAST_DURATION: 2000,
+            ANIMATION_DELAY: 10,
+            LOCALE: 'tr-TR'
+        };
+
+        const CLASSES = {
+            ACTIVE: 'text-neon-cyan',
+            INACTIVE: 'text-gray-400',
+            SUCCESS: 'text-neon-green',
+            ERROR: 'text-neon-red',
+            HIDDEN: 'hidden',
+            DISABLED: 'opacity-50 cursor-not-allowed'.split(' ')
+        };
+
+        const ICONS = {
+            SORT_DEFAULT: 'fa-solid fa-sort ml-1 opacity-50',
+            SORT_ASC_TEXT: 'fa-solid fa-arrow-up-a-z ml-1',
+            SORT_DESC_TEXT: 'fa-solid fa-arrow-down-z-a ml-1',
+            SORT_ASC_NUM: 'fa-solid fa-arrow-up-1-9 ml-1',
+            SORT_DESC_NUM: 'fa-solid fa-arrow-down-9-1 ml-1',
+            CHECK: 'fa-solid fa-check',
+            ERROR: 'fa-solid fa-xmark'
+        };
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function getSortIcon(direction, type) {
+            if (type === 'number') {
+                return direction === 'asc' ? ICONS.SORT_ASC_NUM : ICONS.SORT_DESC_NUM;
+            }
+            return direction === 'asc' ? ICONS.SORT_ASC_TEXT : ICONS.SORT_DESC_TEXT;
+        }
+
+        function compareValues(a, b, direction, type) {
+            if (type === 'number') {
+                const numA = parseFloat(a) || 0;
+                const numB = parseFloat(b) || 0;
+                return direction === 'asc' ? numA - numB : numB - numA;
+            }
+            const strA = String(a || '');
+            const strB = String(b || '');
+            return direction === 'asc'
+                ? strA.localeCompare(strB, CONFIG.LOCALE)
+                : strB.localeCompare(strA, CONFIG.LOCALE);
+        }
+        function sortContainer(containerId, itemSelector, dataAttr, type = 'string') {
+            const container = $(containerId);
+            if (!container) {
+                console.warn(`[Sort] Container not found: ${containerId}`);
+                return;
+            }
+
+            const items = Array.from(container.querySelectorAll(itemSelector));
+            if (!items.length) return;
+
+            const btn = event?.currentTarget;
+            if (!btn) return;
+
+            const currentDir = btn.getAttribute('data-dir');
+            const direction = currentDir === 'asc' ? 'desc' : 'asc';
+
+            const toolbar = btn.closest('.sort-toolbar');
+            if (toolbar) {
+                toolbar.querySelectorAll('button').forEach(b => {
+                    if (b !== btn) {
+                        b.removeAttribute('data-dir');
+                        b.classList.remove(CLASSES.ACTIVE);
+                        b.classList.add(CLASSES.INACTIVE);
+                    }
+                });
+            }
+
+            btn.setAttribute('data-dir', direction);
+            btn.classList.remove(CLASSES.INACTIVE);
+            btn.classList.add(CLASSES.ACTIVE);
+
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = getSortIcon(direction, type);
+            }
+
+            items.sort((a, b) => {
+                const valA = a.getAttribute(dataAttr) || '';
+                const valB = b.getAttribute(dataAttr) || '';
+                return compareValues(valA, valB, direction, type);
+            });
+
+            items.forEach(item => container.appendChild(item));
+        }
+
+
+        function sortTable(tableId, colIndex, type = 'string') {
+            const table = $(tableId);
+            if (!table) {
+                console.warn(`[Sort] Table not found: ${tableId}`);
+                return;
+            }
+
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            if (!rows.length) return;
+
+            const th = event?.currentTarget;
+            if (!th) return;
+
+            const currentDir = th.getAttribute('data-dir');
+            const direction = currentDir === 'asc' ? 'desc' : 'asc';
+
+            const headerRow = th.closest('tr');
+            if (headerRow) {
+                headerRow.querySelectorAll('th').forEach(header => {
+                    if (header !== th) {
+                        header.removeAttribute('data-dir');
+                        header.classList.remove(CLASSES.ACTIVE);
+                        header.classList.add(CLASSES.INACTIVE);
+                        const icon = header.querySelector('i');
+                        if (icon) icon.className = ICONS.SORT_DEFAULT;
+                    }
+                });
+            }
+
+            th.setAttribute('data-dir', direction);
+            th.classList.remove(CLASSES.INACTIVE);
+            th.classList.add(CLASSES.ACTIVE);
+
+            const icon = th.querySelector('i');
+            if (icon) {
+                icon.className = getSortIcon(direction, type);
+            }
+
+            rows.sort((a, b) => {
+                const cellA = a.cells[colIndex];
+                const cellB = b.cells[colIndex];
+                if (!cellA || !cellB) return 0;
+
+                const valA = cellA.hasAttribute('data-value')
+                    ? cellA.getAttribute('data-value')
+                    : cellA.textContent.trim();
+                const valB = cellB.hasAttribute('data-value')
+                    ? cellB.getAttribute('data-value')
+                    : cellB.textContent.trim();
+
+                return compareValues(valA, valB, direction, type);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+        function filterContainer(containerId, itemSelector, inputElement, textSelector = null) {
+            const container = $(containerId);
+            if (!container || !inputElement) return;
+
+            const filterText = inputElement.value.toLowerCase().trim();
+            const items = container.querySelectorAll(itemSelector);
+
+            items.forEach(item => {
+                let text = '';
+                if (textSelector) {
+                    const el = item.querySelector(textSelector);
+                    text = el ? el.textContent : '';
+                } else {
+                    text = item.textContent;
+                }
+
+                item.style.display = text.toLowerCase().includes(filterText) ? '' : 'none';
+            });
+        }
+
+        function filterTable(tbodyId, searchText) {
+            const tbody = $(tbodyId);
+            if (!tbody) {
+                console.warn(`[Filter] Tbody not found: ${tbodyId}`);
+                return;
+            }
+
+            const rows = tbody.querySelectorAll('tr');
+            const filterText = searchText.toLowerCase().trim();
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filterText) ? '' : 'none';
+            });
+        }
+        let toastElement = null;
+
+        function getToast() {
+            if (!toastElement) {
+                toastElement = document.createElement('div');
+                toastElement.className = 'copy-toast fixed bottom-4 right-4 bg-neon-green/20 border border-neon-green text-neon-green px-4 py-2 rounded-lg text-sm font-bold shadow-lg transform translate-y-10 opacity-0 transition-all duration-300 z-50 flex items-center gap-2';
+                toastElement.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                document.body.appendChild(toastElement);
+            }
+            return toastElement;
+        }
+
+        function copyToClipboard(text, btnElement) {
+            const btn = btnElement || event?.currentTarget || event?.target?.closest('button');
+            if (!btn) return;
+
+            const icon = btn.querySelector('i');
+            const originalClass = icon ? icon.className : '';
+
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    if (icon) {
+                        icon.className = `${ICONS.CHECK} ${CLASSES.SUCCESS} text-sm scale-110 transition-transform`;
+                        btn.classList.add(CLASSES.SUCCESS);
+                        btn.classList.remove('text-gray-500');
+                    }
+
+                    const toast = getToast();
+                    setTimeout(() => {
+                        toast.classList.remove('translate-y-10', 'opacity-0');
+                    }, CONFIG.ANIMATION_DELAY);
+
+                    setTimeout(() => {
+                        if (icon) {
+                            icon.className = originalClass;
+                            btn.classList.remove(CLASSES.SUCCESS);
+                            btn.classList.add('text-gray-500');
+                        }
+                        toast.classList.add('translate-y-10', 'opacity-0');
+                    }, CONFIG.TOAST_DURATION);
+                })
+                .catch(err => {
+                    console.error('[Clipboard] Copy failed:', err);
+                    if (icon) {
+                        icon.className = `${ICONS.ERROR} ${CLASSES.ERROR}`;
+                        setTimeout(() => {
+                            icon.className = originalClass;
+                        }, CONFIG.TOAST_DURATION);
+                    }
+                });
+        }
+
+        function initTimestamp() {
+            const el = $('analysisTime');
+            if (el) {
+                el.textContent = new Date().toLocaleString(CONFIG.LOCALE, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+
+        initTimestamp();
+        window.sortContainer = sortContainer;
+        window.sortTable = sortTable;
+        window.filterContainer = filterContainer;
+        window.filterTable = filterTable;
+        window.copyToClipboard = copyToClipboard;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section[id], div[id].scroll-mt-28');
+            const navLinks = document.querySelectorAll('#reportSidebar a');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-10% 0px -80% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+
+                        navLinks.forEach(link => {
+                            link.classList.remove('bg-white/5', 'text-neon-cyan');
+                            link.classList.add('text-gray-400');
+
+                            const iconBlock = link.querySelector('span');
+                            if (iconBlock) {
+                                iconBlock.classList.remove('bg-neon-cyan/10', 'text-neon-cyan');
+                                iconBlock.classList.add('bg-white/5');
+                            }
+                        });
+
+                        const activeLink = document.querySelector(`#reportSidebar a[href="#${id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.remove('text-gray-400');
+                            activeLink.classList.add('bg-white/5', 'text-neon-cyan');
+
+                            const iconBlock = activeLink.querySelector('span');
+                            if (iconBlock) {
+                                iconBlock.classList.remove('bg-white/5');
+                                iconBlock.classList.add('bg-neon-cyan/10', 'text-neon-cyan');
+                            }
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => observer.observe(section));
+        });
+
+    })();
+</script>
+{% endblock %}

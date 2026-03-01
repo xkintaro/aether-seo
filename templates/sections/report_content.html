@@ -1,0 +1,175 @@
+<section id="content-section" class="glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-amber/20 flex items-center justify-center">
+            <i class="fa-solid fa-file-lines text-neon-amber"></i>
+        </div>
+        <h2 class="text-xl font-bold">Content Analysis</h2>
+    </div>
+
+    {% if data.results.content and not data.results.content.error %}
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="p-4 rounded-lg border 
+                        {% if data.results.content.word_count.status == 'success' %}bg-status-success border-neon-green/30
+                        {% elif data.results.content.word_count.status == 'warning' %}bg-status-warning border-neon-amber/30
+                        {% else %}bg-status-error border-neon-red/30{% endif %}">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-text-width 
+                                {% if data.results.content.word_count.status == 'success' %}text-neon-green
+                                {% elif data.results.content.word_count.status == 'warning' %}text-neon-amber
+                                {% else %}text-neon-red{% endif %}"></i>
+                <span class="text-xs text-gray-400">Word Count</span>
+            </div>
+            <p class="text-2xl font-bold 
+                            {% if data.results.content.word_count.status == 'success' %}text-neon-green
+                            {% elif data.results.content.word_count.status == 'warning' %}text-neon-amber
+                            {% else %}text-neon-red{% endif %}">
+                {{ data.results.content.word_count.total }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1">Min: {{
+                data.results.content.word_count.min_recommended }}
+            </p>
+        </div>
+        <div class="p-4 rounded-lg border 
+                        {% if data.results.content.text_html_ratio.status == 'success' %}bg-status-success border-neon-green/30
+                        {% elif data.results.content.text_html_ratio.status == 'warning' %}bg-status-warning border-neon-amber/30
+                        {% else %}bg-status-error border-neon-red/30{% endif %}">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-scale-balanced 
+                                {% if data.results.content.text_html_ratio.status == 'success' %}text-neon-green
+                                {% elif data.results.content.text_html_ratio.status == 'warning' %}text-neon-amber
+                                {% else %}text-neon-red{% endif %}"></i>
+                <span class="text-xs text-gray-400">Text/HTML Ratio</span>
+            </div>
+            <p class="text-2xl font-bold 
+                            {% if data.results.content.text_html_ratio.status == 'success' %}text-neon-green
+                            {% elif data.results.content.text_html_ratio.status == 'warning' %}text-neon-amber
+                            {% else %}text-neon-red{% endif %}">
+                %{{ data.results.content.text_html_ratio.percentage }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1">Ideal: 20-70%</p>
+        </div>
+    </div>
+
+    <div class="mb-6 p-4 rounded-lg border 
+                    {% if data.results.content.inline_code.status == 'success' %}bg-status-success border-neon-green/30
+                    {% elif data.results.content.inline_code.status == 'warning' %}bg-status-warning border-neon-amber/30
+                    {% else %}bg-status-error border-neon-red/30{% endif %}">
+        <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-code 
+                                {% if data.results.content.inline_code.status == 'success' %}text-neon-green
+                                {% elif data.results.content.inline_code.status == 'warning' %}text-neon-amber
+                                {% else %}text-neon-red{% endif %}"></i>
+                <span class="text-sm font-medium text-gray-200">Inline CSS/JS Ratio</span>
+            </div>
+            <span class="text-xs px-2 py-0.5 rounded bg-black/20 text-gray-400 font-mono">
+                {{ data.results.content.inline_code.total_inline_bytes | format_size }}
+            </span>
+        </div>
+        <div class="flex items-end gap-2 mb-1">
+            <span class="text-2xl font-bold 
+                            {% if data.results.content.inline_code.status == 'success' %}text-neon-green
+                            {% elif data.results.content.inline_code.status == 'warning' %}text-neon-amber
+                            {% else %}text-neon-red{% endif %}">
+                %{{ data.results.content.inline_code.ratio }}
+            </span>
+            <span class="text-xs text-gray-500 mb-1.5">{{ data.results.content.inline_code.message
+                }}</span>
+        </div>
+        <div class="w-full h-1.5 bg-black/20 rounded-full overflow-hidden">
+            <div class="h-full rounded-full 
+                            {% if data.results.content.inline_code.status == 'success' %}bg-neon-green
+                            {% elif data.results.content.inline_code.status == 'warning' %}bg-neon-amber
+                            {% else %}bg-neon-red{% endif %}"
+                style="width: {{ min(data.results.content.inline_code.ratio, 100) }}%">
+            </div>
+        </div>
+    </div>
+    <div class="mb-4">
+        <div class="flex items-center gap-2 mb-3">
+            <i class="fa-solid fa-key text-neon-cyan"></i>
+            <span class="text-sm font-medium">Top Keywords</span>
+            <span class="ml-auto text-xs text-gray-500">{{
+                data.results.content.keywords.total_unique }}
+                unique words</span>
+        </div>
+
+        {% if data.results.content.keywords.top_keywords %}
+        <div class="space-y-2">
+            {% for kw in data.results.content.keywords.top_keywords %}
+            <div class="flex items-center gap-3">
+                <span class="w-6 text-xs text-gray-500 text-right">{{ loop.index }}.</span>
+                <span class="font-mono text-sm flex-1">{{ kw.word }}</span>
+                <span class="text-xs text-gray-400">{{ kw.count }}x</span>
+                <div class="w-24 h-1.5 bg-void-lighter rounded-full overflow-hidden">
+                    <div class="h-full rounded-full 
+                                    {% if kw.density > 5 %}bg-neon-red
+                                    {% elif kw.density > 3 %}bg-neon-amber
+                                    {% else %}bg-neon-cyan{% endif %}" style="width: {{ min(kw.density * 10, 100) }}%">
+                    </div>
+                </div>
+                <span class="text-xs font-mono w-12 text-right
+                                {% if kw.density > 5 %}text-neon-red
+                                {% elif kw.density > 3 %}text-neon-amber
+                                {% else %}text-gray-400{% endif %}">%{{ kw.density }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div
+            class="flex flex-col items-center justify-center py-6 text-center bg-void/50 rounded-lg border border-white/5 border-dashed">
+            <i class="fa-solid fa-heading text-gray-600 text-lg mb-2"></i>
+            <p class="text-sm font-medium text-gray-400">No keywords found</p>
+        </div>
+        {% endif %}
+    </div>
+    <div class="p-3 rounded-lg border 
+                    {% if data.results.content.keywords.status == 'success' %}bg-status-success border-neon-green/30
+                    {% else %}bg-status-warning border-neon-amber/30{% endif %}">
+        <p class="text-sm 
+                        {% if data.results.content.keywords.status == 'success' %}text-neon-green
+                        {% else %}text-neon-amber{% endif %}">
+            <i
+                class="fa-solid {% if data.results.content.keywords.status == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-1"></i>
+            {{ data.results.content.keywords.message }}
+        </p>
+    </div>
+    {% else %}
+    <p class="text-gray-500">Content analysis could not be performed</p>
+    {% endif %}
+
+
+    {% if data.results.content.deprecated_tags %}
+    <div
+        class="mt-4 p-4 rounded-lg border 
+                    {% if data.results.content.deprecated_tags.has_deprecated %}bg-neon-red/5 border-neon-red/30{% else %}bg-neon-green/5 border-neon-green/30{% endif %}">
+        <div class="flex items-center gap-2 mb-2">
+            <i
+                class="fa-solid {% if data.results.content.deprecated_tags.has_deprecated %}fa-ban text-neon-red{% else %}fa-check-circle text-neon-green{% endif %}"></i>
+            <h3
+                class="text-sm font-bold {% if data.results.content.deprecated_tags.has_deprecated %}text-neon-red{% else %}text-neon-green{% endif %}">
+                {% if data.results.content.deprecated_tags.has_deprecated %}
+                Deprecated HTML Tags Detected
+                {% else %}
+                Modern HTML Structure
+                {% endif %}
+            </h3>
+        </div>
+
+        {% if data.results.content.deprecated_tags.has_deprecated %}
+        <p class="text-xs text-gray-400 mb-3">Tags that do not comply with modern web standards were found on your site.
+        </p>
+        <div class="space-y-1">
+            {% for tag in data.results.content.deprecated_tags.tag_list %}
+            <div class="flex items-center justify-between text-xs bg-black/20 p-2 rounded">
+                <code class="text-neon-red">&lt;{{ tag.tag }}&gt;</code>
+                <span class="text-gray-500">{{ tag.reason }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-xs text-gray-400">No deprecated HTML tags were detected on your site.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>

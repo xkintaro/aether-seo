@@ -1,0 +1,108 @@
+<section id="url-section" class="glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-purple/20 flex items-center justify-center">
+            <i class="fa-solid fa-link text-neon-purple"></i>
+        </div>
+        <h2 class="text-xl font-bold">URL Structure</h2>
+    </div>
+
+    <div class="flex flex-col gap-3">
+
+        <div
+            class="group flex items-center justify-between p-4 rounded-xl bg-void/50 border border-white/5 hover:border-neon-purple/30 transition-all">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-layer-group text-neon-purple"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-200">Depth Level</h4>
+                    {% if data.results.url.depth.status != 'success' %}
+                    <p class="text-[10px] text-neon-amber mt-0.5">{{ data.results.url.depth.message
+                        }}</p>
+                    {% else %}
+                    <div class="h-1 w-24 bg-gray-800 rounded-full overflow-hidden mt-1.5">
+                        <div class="h-full bg-neon-purple"
+                            style="width: {{ (data.results.url.depth.level / 5) * 100 }}%"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="block text-xl font-bold text-white">{{ data.results.url.depth.level
+                    }}</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-wider">Level</span>
+            </div>
+        </div>
+
+
+        <div
+            class="group flex items-center justify-between p-4 rounded-xl bg-void/50 border border-white/5 hover:border-neon-cyan/30 transition-all">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-code-branch text-neon-cyan"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-200">URL Parameters</h4>
+                    {% if not data.results.url.parameters.is_clean %}
+                    <p class="text-[10px] text-neon-red mt-0.5">{{
+                        data.results.url.parameters.message }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <span
+                    class="px-3 py-1 rounded text-xs font-bold {% if data.results.url.parameters.is_clean %}bg-neon-green/10 text-neon-green border border-neon-green/20{% else %}bg-neon-red/10 text-neon-red border border-neon-red/20{% endif %}">
+                    {{ 'Clean' if data.results.url.parameters.is_clean else 'Dirty' }}
+                </span>
+            </div>
+        </div>
+
+
+        <div
+            class="group flex items-center justify-between p-4 rounded-xl bg-void/50 border border-white/5 hover:border-neon-pink/30 transition-all">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-i-cursor text-neon-pink"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-200">Separator Structure</h4>
+                    <p class="text-[10px] text-gray-500 mt-0.5">{{
+                        data.results.url.separators.message }}</p>
+                </div>
+            </div>
+            <div>
+                <span
+                    class="px-3 py-1 rounded text-xs font-bold {% if data.results.url.separators.status == 'success' %}bg-neon-green/10 text-neon-green border border-neon-green/20{% else %}bg-neon-amber/10 text-neon-amber border border-neon-amber/20{% endif %}">
+                    {{ 'Valid' if data.results.url.separators.status == 'success' else 'Invalid' }}
+                </span>
+            </div>
+        </div>
+
+
+        <div
+            class="group flex items-center justify-between p-4 rounded-xl bg-void/50 border border-white/5 hover:border-neon-blue/30 transition-all">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-ruler-horizontal text-neon-blue"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-gray-200">URL Length</h4>
+                    <div class="h-1 w-24 bg-gray-800 rounded-full overflow-hidden mt-1.5">
+                        <div class="h-full {% if data.results.url.length.status == 'success' %}bg-neon-green{% else %}bg-neon-amber{% endif %}"
+                            style="width: {{ (data.results.url.length.length / 100) * 100 }}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="block text-xl font-bold text-white">{{ data.results.url.length.length
+                    }}</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-wider">Characters</span>
+            </div>
+        </div>
+    </div>
+</section>

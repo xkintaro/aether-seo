@@ -1,0 +1,80 @@
+<section id="headings-section" class="glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-pink/20 flex items-center justify-center">
+            <i class="fa-solid fa-heading text-neon-pink"></i>
+        </div>
+        <h2 class="text-xl font-bold">Heading Structure</h2>
+        <span class="ml-auto text-sm text-gray-400">{{ data.results.structure.counts.total }}
+            headings</span>
+    </div>
+    <div class="mb-4 p-3 rounded-lg border 
+                    {% if data.results.structure.h1_status.status == 'success' %}bg-status-success border-neon-green/30
+                    {% elif data.results.structure.h1_status.status == 'warning' %}bg-status-warning border-neon-amber/30
+                    {% else %}bg-status-error border-neon-red/30{% endif %}">
+        <div class="flex items-center gap-2">
+            <i
+                class="fa-solid {% if data.results.structure.h1_status.status == 'success' %}fa-check-circle text-neon-green{% elif data.results.structure.h1_status.status == 'warning' %}fa-exclamation-circle text-neon-amber{% else %}fa-times-circle text-neon-red{% endif %}"></i>
+            <span class="font-medium">H1: {{ data.results.structure.h1_status.count }}</span>
+        </div>
+        <p class="text-sm text-gray-400 mt-1">{{ data.results.structure.h1_status.message }}</p>
+    </div>
+    <div class="grid grid-cols-6 gap-2 mb-4">
+        {% for i in range(1, 7) %}
+        <div class="text-center p-2 rounded-lg bg-void/50 border border-white/5">
+            <p class="text-xs text-gray-500">H{{ i }}</p>
+            <p class="text-lg font-bold text-white">{{ data.results.structure.counts['h' ~ i] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="bg-void/50 rounded-lg border border-white/5 p-4 max-h-80 overflow-y-auto">
+        <p class="text-xs text-gray-500 mb-3 uppercase tracking-wide">Heading Tree</p>
+        {% macro render_tree(items, depth=0) %}
+        {% for item in items %}
+        <div class="flex items-start gap-2 py-1" style="padding-left: {{ depth * 16 }}px">
+            <span class="text-xs px-1.5 py-0.5 rounded bg-neon-pink/20 text-neon-pink font-mono">{{
+                item.tag
+                }}</span>
+            <span class="text-sm text-gray-300 break-words">{{ item.text[:80] }}{% if
+                item.text|length > 80
+                %}...{% endif %}</span>
+        </div>
+        {% if item.children %}
+        {{ render_tree(item.children, depth + 1) }}
+        {% endif %}
+        {% endfor %}
+        {% endmacro %}
+
+        {% if data.results.structure.tree %}
+        {{ render_tree(data.results.structure.tree) }}
+        {% else %}
+        <div
+            class="flex flex-col items-center justify-center py-8 text-center bg-void/30 rounded-lg border border-white/5 border-dashed">
+            <i class="fa-solid fa-folder-tree text-gray-600 text-xl mb-2"></i>
+            <p class="text-gray-400 text-sm font-medium">Heading Structure Not Found</p>
+            <p class="text-gray-500 text-xs mt-1">No h1-h6 tags were detected on the site.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% if data.results.structure.issues %}
+    <div class="mt-4 space-y-2">
+        {% for issue in data.results.structure.issues %}
+        <div
+            class="flex items-start gap-2 p-2 rounded-lg bg-{{ 'neon-amber' if issue.type == 'warning' else 'neon-red' }}/10">
+            <i
+                class="fa-solid fa-exclamation-triangle text-{{ 'neon-amber' if issue.type == 'warning' else 'neon-red' }} text-sm mt-0.5"></i>
+            <span class="text-sm text-gray-300">{{ issue.message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="mt-4 p-3 rounded-lg bg-neon-green/5 border border-neon-green/20 flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-neon-green/10 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-check text-neon-green text-sm"></i>
+        </div>
+        <div>
+            <p class="text-sm font-bold text-neon-green">Perfect Heading Structure</p>
+            <p class="text-xs text-gray-400">No issues were detected in the heading hierarchy.</p>
+        </div>
+    </div>
+    {% endif %}
+</section>

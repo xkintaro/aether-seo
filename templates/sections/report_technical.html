@@ -1,0 +1,90 @@
+<section id="technical-section" class="glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-amber/20 flex items-center justify-center">
+            <i class="fa-solid fa-file-code text-neon-amber"></i>
+        </div>
+        <h2 class="text-xl font-bold">Technical Files</h2>
+    </div>
+    <div class="mb-4 p-4 rounded-lg border 
+                    {% if data.results.media.favicon.status == 'success' %}bg-status-success border-neon-green/30
+                    {% elif data.results.media.favicon.status == 'warning' %}bg-status-warning border-neon-amber/30
+                    {% else %}bg-status-error border-neon-red/30{% endif %}">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-8 h-8 rounded bg-void-dark flex items-center justify-center shrink-0 border border-white/10 overflow-hidden relative group-hover:border-white/20 transition-colors">
+                {% if data.results.media.favicon.primary %}
+                <img src="{{ data.results.media.favicon.primary.href_full }}" alt="Favicon"
+                    class="w-full h-full object-cover"
+                    onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')">
+                <i class="fa-solid fa-triangle-exclamation text-neon-red text-lg hidden"></i>
+                {% else %}
+                <i class="fa-solid fa-circle-xmark text-neon-red text-lg"></i>
+                {% endif %}
+            </div>
+            <div>
+                <p
+                    class="font-medium {% if data.results.media.favicon.status == 'success' %}text-neon-green{% elif data.results.media.favicon.status == 'warning' %}text-neon-amber{% else %}text-neon-red{% endif %}">
+                    Favicon
+                    {% if data.results.media.favicon.exists %}
+                    {% if data.results.media.favicon.primary.width %}
+                    <span class="text-xs font-mono ml-1 text-gray-400">({{
+                        data.results.media.favicon.primary.width }}x{{
+                        data.results.media.favicon.primary.height }}px)</span>
+                    {% endif %}
+                    {% else %}
+                    Missing
+                    {% endif %}
+                </p>
+
+                <p class="text-xs text-gray-500 mt-0.5">{{ data.results.media.favicon.message }}</p>
+
+                {% if data.results.media.favicon.exists and data.results.media.favicon.primary %}
+                <a href="{{ data.results.media.favicon.primary.href_full }}" target="_blank"
+                    class="text-[10px] text-neon-cyan hover:underline font-mono break-all mt-1 block opacity-70 hover:opacity-100">
+                    {{ data.results.media.favicon.primary.href }}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="mb-4 p-4 rounded-lg border 
+                    {% if data.results.sitemap_robots.robots.exists %}bg-status-success border-neon-green/30
+                    {% else %}bg-status-warning border-neon-amber/30{% endif %}">
+        <div class="flex items-center justify-between mb-2">
+            <a href="{{ data.results.sitemap_robots.robots.url }}" target="_blank"
+                class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <i
+                    class="fa-solid fa-robot {% if data.results.sitemap_robots.robots.exists %}text-neon-green{% else %}text-neon-amber{% endif %}"></i>
+                <span class="font-medium hover:text-neon-cyan">robots.txt</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500"></i>
+            </a>
+            <span
+                class="text-xs {% if data.results.sitemap_robots.robots.exists %}text-neon-green{% else %}text-neon-amber{% endif %}">
+                {% if data.results.sitemap_robots.robots.exists %}Exists{% else %}Missing{% endif %}
+            </span>
+        </div>
+        {% if data.results.sitemap_robots.robots.exists and
+        data.results.sitemap_robots.robots.content_preview %}
+        <pre
+            class="text-xs font-mono bg-void/50 p-3 rounded-lg overflow-x-auto max-h-32 text-gray-400">{{ data.results.sitemap_robots.robots.content_preview }}</pre>
+        {% endif %}
+    </div>
+    <div class="p-4 rounded-lg border 
+                    {% if data.results.sitemap_robots.sitemap.status != 'error' %}bg-status-success border-neon-green/30
+                    {% else %}bg-status-warning border-neon-amber/30{% endif %}">
+        <div class="flex items-center justify-between">
+            <a href="{{ data.results.sitemap_robots.sitemap.url }}" target="_blank"
+                class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <i
+                    class="fa-solid fa-sitemap {% if data.results.sitemap_robots.sitemap.status != 'error' %}text-neon-green{% else %}text-neon-amber{% endif %}"></i>
+                <span class="font-medium hover:text-neon-cyan">sitemap.xml</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500"></i>
+            </a>
+            <span
+                class="text-xs {% if data.results.sitemap_robots.sitemap.status != 'error' %}text-neon-green{% else %}text-neon-amber{% endif %}">
+                {% if data.results.sitemap_robots.sitemap.status != 'error' %}{{
+                data.results.sitemap_robots.sitemap.total_urls }} URL{% else %}Missing{% endif %}
+            </span>
+        </div>
+    </div>
+</section>

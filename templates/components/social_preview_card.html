@@ -1,0 +1,149 @@
+<section class="mt-6 glass rounded-2xl p-6">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-pink/20 flex items-center justify-center">
+            <i class="fa-solid fa-share-nodes text-neon-pink"></i>
+        </div>
+        <h2 class="text-xl font-bold">Social Media Previews</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div>
+            <div class="flex items-center gap-2 mb-3">
+                <i class="fa-brands fa-facebook text-[#1877F2]"></i>
+                <span class="text-sm font-medium">Facebook / Open Graph</span>
+                {% if data.results.meta.og_tags.status == 'success' %}
+                <span class="ml-auto px-2 py-0.5 bg-neon-green/20 text-neon-green text-xs rounded">OK</span>
+                {% elif data.results.meta.og_tags.status == 'warning' %}
+                <span class="ml-auto px-2 py-0.5 bg-neon-amber/20 text-neon-amber text-xs rounded">Missing</span>
+                {% else %}
+                <span class="ml-auto px-2 py-0.5 bg-neon-red/20 text-neon-red text-xs rounded">None</span>
+                {% endif %}
+            </div>
+            <div class="rounded-2xl overflow-hidden border border-gray-700 bg-black">
+                {% set og_image = data.results.meta.og_tags.tags.get('image', '') %}
+                {% set og_title = data.results.meta.og_tags.tags.get('title', '') %}
+                {% set og_description = data.results.meta.og_tags.tags.get('description', '') %}
+                {% set og_url = data.results.meta.og_tags.tags.get('url', '') %}
+
+                {% if og_image and og_image.startswith('http') %}
+                <div class="aspect-[1.91/1] bg-void overflow-hidden">
+                    <img src="{{ og_image }}" alt="OG Image" class="w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-void-lighter\'><i class=\'fa-solid fa-image text-4xl text-gray-600\'></i></div>'">
+                </div>
+                {% else %}
+                <div class="aspect-[1.91/1] bg-void-lighter flex items-center justify-center">
+                    <i class="fa-solid fa-image text-4xl text-gray-600"></i>
+                </div>
+                {% endif %}
+                <div class="p-3">
+                    <p class="font-bold text-white text-sm leading-tight mb-1 line-clamp-2">
+                        {{ og_title if og_title else data.results.meta.title.content | default('No Title', true) }}
+                    </p>
+                    <p class="text-sm text-gray-500 line-clamp-2 mb-1">
+                        {{ og_description if og_description else data.results.meta.description.content | default('No
+                        Description', true) }}
+                    </p>
+                    <p class="text-sm text-gray-500 flex items-center gap-1">
+                        <i class="fa-solid fa-link text-[10px]"></i>
+                        {% if og_url %}
+                        {{ og_url | replace('https://', '') | replace('http://', '') }}
+                        {% else %}
+                        <span class="text-neon-red/70">{{ domain }} (og:url missing)</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="mt-3 grid grid-cols-6 gap-2">
+                {% set og_essential = ['title', 'description', 'image', 'url', 'type', 'site_name'] %}
+                {% for tag in og_essential %}
+                {% set tag_value = data.results.meta.og_tags.tags.get(tag, '') %}
+                <div class="text-center p-2 rounded-lg 
+                    {% if tag_value %}bg-neon-green/10 border border-neon-green/30
+                    {% else %}bg-neon-red/10 border border-neon-red/30{% endif %}">
+                    <i class="fa-solid {% if tag_value %}fa-check{% else %}fa-xmark{% endif %} 
+                        {% if tag_value %}text-neon-green{% else %}text-neon-red{% endif %} text-xs"></i>
+                    <p class="text-[10px] text-gray-500 mt-1">{{ tag }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <div class="flex items-center gap-2 mb-3">
+                <i class="fa-brands fa-x-twitter text-white"></i>
+                <span class="text-sm font-medium">Twitter / X Card</span>
+                {% if data.results.meta.twitter_tags.status == 'success' %}
+                <span class="ml-auto px-2 py-0.5 bg-neon-green/20 text-neon-green text-xs rounded">OK</span>
+                {% elif data.results.meta.twitter_tags.status == 'warning' %}
+                <span class="ml-auto px-2 py-0.5 bg-neon-amber/20 text-neon-amber text-xs rounded">Missing</span>
+                {% else %}
+                <span class="ml-auto px-2 py-0.5 bg-neon-red/20 text-neon-red text-xs rounded">None</span>
+                {% endif %}
+            </div>
+            <div class="rounded-2xl overflow-hidden border border-gray-700 bg-black">
+                {% set tw_card = data.results.meta.twitter_tags.tags.get('card', '') %}
+                {% set tw_image = data.results.meta.twitter_tags.tags.get('image', '') %}
+                {% set tw_title = data.results.meta.twitter_tags.tags.get('title', '') %}
+                {% set tw_description = data.results.meta.twitter_tags.tags.get('description', '') %}
+                {% set tw_url = data.results.meta.twitter_tags.tags.get('url', '') %}
+                {% set display_image = tw_image if tw_image and tw_image.startswith('http') else og_image %}
+
+                {% if display_image and display_image.startswith('http') %}
+                <div class="aspect-[1.91/1] bg-void overflow-hidden">
+                    <img src="{{ display_image }}" alt="Twitter Image" class="w-full h-full object-cover"
+                        onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-void-lighter\'><i class=\'fa-solid fa-image text-4xl text-gray-600\'></i></div>'">
+                </div>
+                {% else %}
+                <div class="aspect-[1.91/1] bg-void-lighter flex items-center justify-center">
+                    <i class="fa-solid fa-image text-4xl text-gray-600"></i>
+                </div>
+                {% endif %}
+                <div class="p-3">
+                    <p class="font-bold text-white text-sm leading-tight mb-1 line-clamp-2">
+                        {{ tw_title if tw_title else (og_title if og_title else data.results.meta.title.content |
+                        default('No Title', true)) }}
+                    </p>
+                    <p class="text-sm text-gray-500 line-clamp-2 mb-1">
+                        {{ tw_description if tw_description else (og_description if og_description else
+                        data.results.meta.description.content | default('No Description', true)) }}
+                    </p>
+                    <p class="text-sm text-gray-500 flex items-center gap-1">
+                        <i class="fa-solid fa-link text-[10px]"></i>
+                        {% if tw_url %}
+                        {{ tw_url | replace('https://', '') | replace('http://', '') }}
+                        {% elif og_url %}
+                        {{ og_url | replace('https://', '') | replace('http://', '') }}
+                        {% else %}
+                        <span class="text-neon-red/70">{{ domain }} (twitter:url missing)</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="mt-3 grid grid-cols-6 gap-2">
+                {% set twitter_essential = ['card', 'site', 'title', 'description', 'image', 'url'] %}
+                {% for tag in twitter_essential %}
+                {% set tw_tag_value = data.results.meta.twitter_tags.tags.get(tag, '') %}
+                <div class="text-center p-2 rounded-lg 
+                    {% if tw_tag_value %}bg-neon-green/10 border border-neon-green/30
+                    {% else %}bg-neon-red/10 border border-neon-red/30{% endif %}">
+                    <i class="fa-solid {% if tw_tag_value %}fa-check{% else %}fa-xmark{% endif %} 
+                        {% if tw_tag_value %}text-neon-green{% else %}text-neon-red{% endif %} text-xs"></i>
+                    <p class="text-[10px] text-gray-500 mt-1">{{ tag }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% set og_missing = data.results.meta.og_tags.missing %}
+    {% set tw_missing = data.results.meta.twitter_tags.missing %}
+    {% if og_missing or tw_missing %}
+    <div class="mt-4 p-3 rounded-lg bg-neon-amber/10 border border-neon-amber/30">
+        <p class="text-sm text-neon-amber">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+            Missing tags:
+            {% if og_missing %}OG: {{ og_missing | join(', ') }}{% endif %}
+            {% if og_missing and tw_missing %} | {% endif %}
+            {% if tw_missing %}Twitter: {{ tw_missing | join(', ') }}{% endif %}
+        </p>
+    </div>
+    {% endif %}
+</section>

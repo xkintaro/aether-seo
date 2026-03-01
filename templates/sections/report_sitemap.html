@@ -1,0 +1,64 @@
+<section id="sitemap-section" class="mt-6 glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-green/20 flex items-center justify-center">
+            <i class="fa-solid fa-sitemap text-neon-green"></i>
+        </div>
+        <h2 class="text-xl font-bold">Sitemap URLs</h2>
+        <span class="ml-auto text-sm text-gray-400">
+            {{ data.results.sitemap_robots.sitemap.total_urls }} URL
+            {% if data.results.sitemap_robots.sitemap.broken_urls > 0 %}
+            <span class="text-neon-red">({{ data.results.sitemap_robots.sitemap.broken_urls }}
+                broken)</span>
+            {% endif %}
+        </span>
+    </div>
+
+    {% if data.results.sitemap_robots.sitemap.total_urls > 0 %}
+    <div class="flex items-center justify-between mb-4">
+        <div class="relative max-w-xs w-full">
+            <input type="text" placeholder="Search URL..." oninput="filterContainer('sitemapList', 'div', this)"
+                class="w-full bg-void/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/50 pl-9 transition-all placeholder-gray-600">
+            <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+        </div>
+        <div class="flex items-center gap-2 text-xs sort-toolbar">
+            <span class="text-gray-500">Sort:</span>
+            <button class="text-gray-400 hover:text-neon-cyan transition-colors"
+                onclick="sortContainer('sitemapList', 'div', 'data-status', 'number', this)">
+                Status <i class="fa-solid fa-sort ml-1"></i>
+            </button>
+            <button class="text-gray-400 hover:text-neon-cyan transition-colors"
+                onclick="sortContainer('sitemapList', 'div', 'data-url', 'string', this)">
+                URL <i class="fa-solid fa-sort ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="sitemapList" class="space-y-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+        {% for url in data.results.sitemap_robots.sitemap.all_urls %}
+        <div class="flex items-center gap-3 p-2 rounded-lg bg-void/50 border border-white/5"
+            data-status="{{ url.status_code if url.status_code else 0 }}" data-url="{{ url.url }}">
+            <span class="flex-shrink-0 px-2 py-1 rounded text-xs font-mono
+                        {% if url.status_code >= 200 and url.status_code < 300 %}bg-neon-green/20 text-neon-green
+                        {% elif url.status_code >= 300 and url.status_code < 400 %}bg-neon-amber/20 text-neon-amber
+                        {% else %}bg-neon-red/20 text-neon-red{% endif %}">
+                {{ url.status_code if url.status_code else 'ERR' }}
+            </span>
+            <a href="{{ url.url }}" target="_blank"
+                class="text-sm text-gray-300 hover:text-neon-cyan truncate font-mono">
+                {{ url.url }}
+            </a>
+            {% if url.lastmod %}
+            <span class="flex-shrink-0 text-xs text-gray-500">{{ url.lastmod }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div
+        class="flex flex-col items-center justify-center py-8 text-center bg-void/30 rounded-lg border border-white/5 border-dashed">
+        <i class="fa-solid fa-sitemap text-gray-600 text-xl mb-2"></i>
+        <p class="text-gray-400 text-sm font-medium">No Sitemap URLs Found</p>
+        <p class="text-gray-500 text-xs mt-1">No URLs were detected in the sitemap file.</p>
+    </div>
+    {% endif %}
+</section>

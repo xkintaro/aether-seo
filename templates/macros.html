@@ -1,0 +1,95 @@
+{% macro status_badge(condition, success_text='OK', error_text='Error', warning_text='Warning', type='bool') %}
+{% if type == 'bool' %}
+{% if condition %}
+<span class="px-2 py-0.5 bg-neon-green/20 text-neon-green text-xs rounded font-medium">{{ success_text }}</span>
+{% else %}
+<span class="px-2 py-0.5 bg-neon-red/20 text-neon-red text-xs rounded font-medium">{{ error_text }}</span>
+{% endif %}
+{% elif type == 'status' %}
+{% if condition == 'success' %}
+<span class="px-2 py-0.5 bg-neon-green/20 text-neon-green text-xs rounded font-medium">{{ success_text }}</span>
+{% elif condition == 'warning' %}
+<span class="px-2 py-0.5 bg-neon-amber/20 text-neon-amber text-xs rounded font-medium">{{ warning_text }}</span>
+{% else %}
+<span class="px-2 py-0.5 bg-neon-red/20 text-neon-red text-xs rounded font-medium">{{ error_text }}</span>
+{% endif %}
+{% endif %}
+{% endmacro %}
+
+{% macro score_bar(score, width='w-24') %}
+<div class="flex items-center gap-2">
+    <div class="{{ width }} h-2 bg-gray-800 rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-500
+                {% if score >= 90 %}bg-neon-green
+                {% elif score >= 70 %}bg-neon-blue
+                {% elif score >= 50 %}bg-neon-amber
+                {% else %}bg-neon-red{% endif %}" style="width: {{ score }}%"></div>
+    </div>  
+    <span class="text-sm font-bold text-white">%{{ score }}</span>
+</div>
+{% endmacro %}
+
+{% macro http_status(code) %}
+{% if code %}
+{% if code >= 200 and code < 300 %} <span
+    class="text-xs px-2 py-0.5 rounded border bg-neon-green/10 text-neon-green border-neon-green/20">{{ code }}</span>
+    {% elif code >= 300 and code < 400 %} <span
+        class="text-xs px-2 py-0.5 rounded border bg-neon-blue/10 text-neon-blue border-neon-blue/20">{{ code }}</span>
+        {% elif code >= 400 and code < 500 %} <span
+            class="text-xs px-2 py-0.5 rounded border bg-neon-amber/10 text-neon-amber border-neon-amber/20">{{ code
+            }}</span>
+            {% else %}
+            <span class="text-xs px-2 py-0.5 rounded border bg-neon-red/10 text-neon-red border-neon-red/20">{{ code
+                }}</span>
+            {% endif %}
+            {% else %}
+            <span class="text-xs text-gray-600">-</span>
+            {% endif %}
+            {% endmacro %}
+
+            {% macro icon_badge(icon, text, color='gray') %}
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs 
+    {% if color == 'green' %}bg-neon-green/10 text-neon-green
+    {% elif color == 'red' %}bg-neon-red/10 text-neon-red
+    {% elif color == 'amber' %}bg-neon-amber/10 text-neon-amber
+    {% elif color == 'cyan' %}bg-neon-cyan/10 text-neon-cyan
+    {% elif color == 'purple' %}bg-neon-purple/10 text-neon-purple
+    {% else %}bg-gray-700/50 text-gray-400{% endif %}">
+                <i class="{{ icon }}"></i>
+                {% if text %}{{ text }}{% endif %}
+            </span>
+            {% endmacro %}
+
+            {% macro section_header(icon, title, subtitle=None, color='cyan') %}
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center
+        {% if color == 'green' %}bg-neon-green/10 text-neon-green
+        {% elif color == 'red' %}bg-neon-red/10 text-neon-red
+        {% elif color == 'amber' %}bg-neon-amber/10 text-neon-amber
+        {% elif color == 'purple' %}bg-neon-purple/10 text-neon-purple
+        {% elif color == 'blue' %}bg-neon-blue/10 text-neon-blue
+        {% else %}bg-neon-cyan/10 text-neon-cyan{% endif %}">
+                    <i class="{{ icon }} text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">{{ title }}</h3>
+                    {% if subtitle %}
+                    <p class="text-sm text-gray-500">{{ subtitle }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endmacro %}
+
+            {% macro empty_state(message='Data not found', icon='fa-solid fa-inbox') %}
+            <div class="py-8 text-center text-gray-500">
+                <i class="{{ icon }} text-3xl mb-2 opacity-50"></i>
+                <p class="text-sm">{{ message }}</p>
+            </div>
+            {% endmacro %}
+
+            {% macro format_badge(format) %}
+            <span
+                class="text-[9px] px-1.5 py-0.5 rounded bg-void-lighter text-gray-400 border border-white/5 uppercase font-bold">
+                {{ format }}
+            </span>
+            {% endmacro %}

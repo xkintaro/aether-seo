@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{{ app_title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+    <main class="flex-1 flex items-center justify-center px-4 py-20">
+        <div class="max-w-4xl w-full text-center">
+            <div class="mb-8 animate-float">
+                <div class="inline-flex items-center justify-center w-24 h-24 rounded-2xl glass neon-border">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="{{ app_title }}"
+                        class="w-14 h-14 object-contain">
+                </div>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+                {% set title_parts = app_title.split(' ') %}
+                {% if title_parts|length > 1 %}
+                <span class="gradient-text">{{ title_parts[0] }}</span>
+                <span class="text-5xl md:text-6xl">{{ title_parts[1:]|join(' ') }}</span>
+                {% else %}
+                <span class="gradient-text">{{ app_title }}</span>
+                {% endif %}
+            </h1>
+            <p class="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+                Comprehensively analyze your website's SEO performance.
+                <span class="text-neon-cyan">Meta tags</span>,
+                <span class="text-neon-pink">heading hierarchy</span>,
+                <span class="text-neon-green">images</span> and more.
+            </p>
+            <form class="relative max-w-2xl mx-auto" id="analyzeForm">
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-neon-cyan via-neon-pink to-neon-cyan rounded-2xl opacity-30 group-hover:opacity-50 blur-lg transition-all duration-500">
+                    </div>
+                    <div class="relative flex items-center glass rounded-2xl overflow-hidden">
+                        <div class="flex-shrink-0 px-4 py-4 border-r border-white/10">
+                            <span class="text-neon-cyan font-mono text-sm">https://</span>
+                        </div>
+                        <input type="text" name="url" id="urlInput" placeholder="examplesite.com"
+                            class="flex-1 bg-transparent px-4 py-4 text-lg font-mono text-white placeholder-gray-500 focus:outline-none"
+                            autocomplete="off" spellcheck="false" required>
+                        <button type="submit" id="submitBtn"
+                            class="flex-shrink-0 m-2 px-6 py-3 bg-gradient-to-r from-neon-cyan to-neon-pink text-void font-semibold rounded-xl hover:opacity-90 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="submitText">Analyze</span>
+                            <i id="submitIcon" class="fa-solid fa-arrow-right"></i>
+                            <i id="submitSpinner" class="fa-solid fa-circle-notch"
+                                style="display:none; animation: spin 1s linear infinite"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="mt-4 text-sm text-gray-500">
+                    <i class="fa-solid fa-info-circle mr-1"></i>
+                    Example: google.com, wikipedia.org/en
+                </p>
+            </form>
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass rounded-xl p-4 text-center">
+                    <i class="fa-solid fa-tags text-neon-cyan text-2xl mb-2"></i>
+                    <p class="text-sm text-gray-400">Meta Tags</p>
+                </div>
+                <div class="glass rounded-xl p-4 text-center">
+                    <i class="fa-solid fa-heading text-neon-pink text-2xl mb-2"></i>
+                    <p class="text-sm text-gray-400">Heading Structure</p>
+                </div>
+                <div class="glass rounded-xl p-4 text-center">
+                    <i class="fa-solid fa-images text-neon-green text-2xl mb-2"></i>
+                    <p class="text-sm text-gray-400">Image Analysis</p>
+                </div>
+                <div class="glass rounded-xl p-4 text-center">
+                    <i class="fa-solid fa-link text-neon-amber text-2xl mb-2"></i>
+                    <p class="text-sm text-gray-400">Link Check</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="py-6 text-center">
+        <div class="flex items-center justify-center gap-4 mb-3">
+            {% if social_github %}
+            <a href="{{ social_github }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-white transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-github text-lg"></i>
+            </a>
+            {% endif %}
+
+            {% if social_discord %}
+            <a href="{{ social_discord }}" target="_blank" rel="noopener noreferrer"
+                class="text-gray-500 hover:text-[#5865F2] transition-all duration-300 transform hover:scale-110">
+                <i class="fa-brands fa-discord text-lg"></i>
+            </a>
+            {% endif %}
+        </div>
+        <p class="text-gray-600 text-sm font-medium">{{ copyright_text }}</p>
+    </footer>
+</div>
+<div id="loadingModal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+    <div class="absolute inset-0 bg-void/90 backdrop-blur-xl"></div>
+    <div class="relative z-10 w-full max-w-2xl px-6">
+        <div class="flex justify-center mb-12 relative">
+            <div class="w-32 h-32 relative">
+                <div class="absolute inset-0 rounded-full border-t-2 border-neon-cyan animate-spin duration-1000"></div>
+                <div
+                    class="absolute inset-2 rounded-full border-r-2 border-neon-pink animate-spin duration-700 reverse-spin">
+                </div>
+                <div class="absolute inset-4 rounded-full border-b-2 border-neon-green animate-spin duration-1500">
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i class="fa-solid fa-bolt text-4xl text-white animate-pulse"></i>
+                </div>
+            </div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-neon-cyan/20 rounded-full blur-3xl -z-10 animate-pulse-slow">
+            </div>
+        </div>
+
+        <div class="text-center mb-8">
+            <h2 id="loadingTitle" class="text-3xl font-bold text-white mb-2 tracking-widest glitch-text"
+                data-text="ANALYSIS_PROTOCOL_INIT">
+                AETHER SEO
+            </h2>
+            <p id="loadingStatus" class="text-neon-cyan font-mono text-lg animate-pulse">
+                Connecting...
+            </p>
+        </div>
+
+        <div
+            class="bg-black/50 rounded-xl border border-white/10 p-4 font-mono text-sm h-48 overflow-y-auto custom-scrollbar relative overflow-hidden group">
+            <div class="absolute inset-0 bg-scanline pointer-events-none opacity-20 z-20"></div>
+
+            <div id="loadingLog" class="flex flex-col gap-2 relative z-10">
+            </div>
+        </div>
+
+        <p class="text-center text-gray-500 text-xs mt-4">
+            {{ copyright_text }}
+        </p>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/analyze.js') }}"></script>
+{% endblock %}

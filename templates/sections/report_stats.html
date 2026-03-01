@@ -1,0 +1,61 @@
+<section id="stats-section" class="mb-6 scroll-mt-28">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass rounded-3xl p-6 group hover:border-neon-cyan/30 transition-all duration-300">
+            <div class="flex items-center gap-4 h-full">
+                <div
+                    class="w-12 h-12 rounded-xl bg-neon-cyan/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-bolt text-xl text-neon-cyan"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Response Time</p>
+                    <p class="text-2xl font-bold text-white">{{ data.results.document.response_time
+                        }}<span class="text-sm font-normal text-gray-500 ml-1">sn</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="glass rounded-3xl p-6 group hover:border-neon-green/30 transition-all duration-300">
+            <div class="flex items-center gap-4 h-full">
+                <div
+                    class="w-12 h-12 rounded-xl 
+                            {% if data.results.ssl.status == 'success' %}bg-neon-green/10 text-neon-green
+                            {% elif data.results.ssl.status == 'warning' %}bg-neon-amber/10 text-neon-amber
+                            {% else %}bg-neon-red/10 text-neon-red{% endif %} flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-lock text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">SSL Certificate</p>
+                    <div class="flex items-baseline gap-2">
+                        <p class="text-xl font-bold text-white">
+                            {% if data.results.ssl.status == 'success' %}Active
+                            {% elif data.results.ssl.status == 'warning' %}Expiring Soon
+                            {% else %}Invalid{% endif %}
+                        </p>
+                        {% if data.results.ssl.days_remaining %}
+                        <span class="text-xs px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400">
+                            {{ data.results.ssl.days_remaining }} days
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="glass rounded-3xl p-6 group hover:border-neon-pink/30 transition-all duration-300">
+            <div class="flex items-center gap-4 h-full">
+                <div
+                    class="w-12 h-12 rounded-xl bg-neon-pink/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-weight-hanging text-xl text-neon-pink"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Total Resource Size</p>
+                    <p class="text-2xl font-bold text-white">
+                        {{ ((data.results.network.assets.css.total_size_bytes or 0) +
+                        (data.results.network.assets.js.total_size_bytes or 0) +
+                        (data.results.content.html_size_bytes or 0) +
+                        (data.results.media.summary.total_size_bytes or 0)) | format_size }}
+                    </p>
+                    <p class="text-[10px] text-gray-600 mt-1">Code + Images & Media</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

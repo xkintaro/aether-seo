@@ -1,0 +1,39 @@
+<aside class="hidden xl:block w-72 sticky top-28 shrink-0 z-40">
+    <nav class="glass rounded-3xl p-4 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+        <div class="mb-4 px-3">
+            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Report Contents</h3>
+        </div>
+        <ul class="space-y-1" id="reportSidebar">
+            {% set sidebar_items = [
+            {'href': 'score-section', 'icon': 'fa-chart-pie', 'label': 'Score Analysis'},
+            {'href': 'stats-section', 'icon': 'fa-bolt', 'label': 'Performance'},
+            {'href': 'meta-section', 'icon': 'fa-tags', 'label': 'Meta & Relevance'},
+            {'href': 'content-section', 'icon': 'fa-file-lines', 'label': 'Content'},
+            {'href': 'headings-section', 'icon': 'fa-heading', 'label': 'Headings'},
+            {'href': 'url-section', 'icon': 'fa-link', 'label': 'URL Structure'},
+            {'href': 'technical-section', 'icon': 'fa-server', 'label': 'Technical'},
+            {'href': 'ssl-section', 'icon': 'fa-shield-halved', 'label': 'SSL'},
+            {'href': 'security-section', 'icon': 'fa-lock', 'label': 'Security'},
+            {'href': 'social-section', 'icon': 'fa-share-nodes', 'label': 'Social Media'},
+            {'href': 'accessibility-section', 'icon': 'fa-universal-access', 'label': 'Accessibility'},
+            {'href': 'media-section', 'icon': 'fa-photo-film', 'label': 'Media'},
+            {'href': 'links-section', 'icon': 'fa-link', 'label': 'Links'},
+            {'href': 'assets-section', 'icon': 'fa-file-code', 'label': 'CSS & JS'},
+            {'href': 'sitemap-section', 'icon': 'fa-sitemap', 'label': 'Sitemap'},
+            {'href': 'hreflang-section', 'icon': 'fa-language', 'label': 'Hreflang'}
+            ] %}
+            {% for item in sidebar_items %}
+            <li>
+                <a href="#{{ item.href }}"
+                    class="group flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-gray-400 hover:text-neon-cyan hover:bg-white/5 transition-all">
+                    <span
+                        class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-neon-cyan/10 group-hover:text-neon-cyan transition-colors">
+                        <i class="fa-solid {{ item.icon }} text-xs"></i>
+                    </span>
+                    {{ item.label }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+</aside>

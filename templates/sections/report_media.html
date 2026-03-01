@@ -1,0 +1,320 @@
+<section id="media-section" class="mt-6 glass rounded-3xl p-6 scroll-mt-28">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-neon-green/20 flex items-center justify-center">
+            <i class="fa-solid fa-photo-film text-neon-green"></i>
+        </div>
+        <div>
+            <h2 class="text-xl font-bold">Media Analysis</h2>
+            <p class="text-xs text-gray-400 font-mono mt-1">
+                {{ data.results.media.images.total }} Images | {{ data.results.media.videos.total }}
+                Videos
+            </p>
+        </div>
+    </div>
+
+
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-image text-neon-cyan"></i> Images
+                <span class="text-xs text-gray-500 font-normal normal-case">({{
+                    data.results.media.images.total }})</span>
+            </h3>
+            {% if data.results.media.images.total > 0 %}
+            <div class="relative max-w-xs">
+                <input type="text" id="imagesSearchInput" placeholder="Search images..."
+                    oninput="filterTable('imagesTableBody', this.value)"
+                    class="w-full bg-void/50 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-neon-cyan/50 pl-8 placeholder-gray-600">
+                <i class="fa-solid fa-search absolute left-2.5 top-2 text-gray-500 text-xs"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if data.results.media.images.total > 0 %}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div
+                class="p-3 rounded-lg border {% if data.results.media.images.issues.missing_alt == 0 %}bg-status-success border-neon-green/30{% else %}bg-status-error border-neon-red/30{% endif %}">
+                <p class="text-xs text-gray-400">Missing Alt</p>
+                <p
+                    class="text-lg font-bold {% if data.results.media.images.issues.missing_alt == 0 %}text-neon-green{% else %}text-neon-red{% endif %}">
+                    {{ data.results.media.images.issues.missing_alt }}
+                </p>
+            </div>
+            <div
+                class="p-3 rounded-lg border {% if data.results.media.images.issues.empty_alt == 0 %}bg-status-success border-neon-green/30{% else %}bg-status-warning border-neon-amber/30{% endif %}">
+                <p class="text-xs text-gray-400">Empty Alt</p>
+                <p
+                    class="text-lg font-bold {% if data.results.media.images.issues.empty_alt == 0 %}text-neon-green{% else %}text-neon-amber{% endif %}">
+                    {{ data.results.media.images.issues.empty_alt }}
+                </p>
+            </div>
+            <div
+                class="p-3 rounded-lg border {% if data.results.media.images.issues.legacy_format == 0 %}bg-status-success border-neon-green/30{% else %}bg-status-warning border-neon-amber/30{% endif %}">
+                <p class="text-xs text-gray-400">Legacy Format</p>
+                <p
+                    class="text-lg font-bold {% if data.results.media.images.issues.legacy_format == 0 %}text-neon-green{% else %}text-neon-amber{% endif %}">
+                    {{ data.results.media.images.issues.legacy_format }}
+                </p>
+            </div>
+            <div class="p-3 rounded-lg border bg-status-info border-neon-cyan/30">
+                <p class="text-xs text-gray-400">Lazy Load Applied</p>
+                <p class="text-lg font-bold text-neon-cyan">
+                    {{ data.results.media.images.issues.has_lazy_load }}
+                </p>
+            </div>
+        </div>
+        <div class="max-h-96 overflow-y-auto rounded-lg border border-white/10 bg-void-dark/30">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" id="imagesTable">
+                    <thead class="bg-void border-b border-white/10">
+                        <tr class="text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-4 text-left font-medium w-14">Preview</th>
+                            <th class="py-3 px-4 text-left font-medium cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('imagesTable', 1, 'string')">
+                                URL <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-20 cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('imagesTable', 2, 'string')">
+                                Format <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('imagesTable', 3, 'string')">
+                                Alt Text <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-20 cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('imagesTable', 4, 'number')">
+                                Status <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-24 cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('imagesTable', 5, 'number')">
+                                Size <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-28">Suggestions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="imagesTableBody" class="divide-y divide-white/5 max-h-[400px] overflow-y-auto">
+                        {% for img in data.results.media.images.data %}
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="py-2 px-4">
+                                <div
+                                    class="w-10 h-10 rounded bg-void-dark border border-white/10 overflow-hidden flex items-center justify-center group-hover:border-neon-cyan/30 transition-colors">
+                                    <img src="{{ img.src_full }}" alt="Preview" class="w-full h-full object-cover"
+                                        loading="lazy"
+                                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                    <i class="fa-solid fa-image text-gray-600 hidden"></i>
+                                </div>
+                            </td>
+                            <td class="py-2 px-4">
+                                <a href="{{ img.src_full }}" target="_blank"
+                                    class="text-xs font-mono text-gray-300 hover:text-neon-cyan truncate block max-w-xs"
+                                    title="{{ img.src }}">
+                                    {{ img.src[:50] }}{% if img.src|length > 50 %}...{% endif %}
+                                    <i class="fa-solid fa-external-link-alt ml-1 text-[10px] opacity-50"></i>
+                                </a>
+                                {% if img.has_dimensions %}
+                                <span
+                                    class="text-[9px] px-1.5 py-0.5 rounded bg-void-lighter text-gray-500 border border-white/5 mt-1 inline-block">
+                                    {{ img.width }}×{{ img.height }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 px-4" data-value="{{ img.format|upper }}">
+                                <span
+                                    class="text-[10px] px-2 py-1 rounded bg-void-lighter text-gray-300 border border-white/10 uppercase font-bold">
+                                    {{ img.format }}
+                                </span>
+                            </td>
+                            <td class="py-2 px-4">
+                                {% if img.alt_status == 'missing' %}
+                                <span class="text-neon-red flex items-center gap-1 text-xs font-bold"><i
+                                        class="fa-solid fa-circle-xmark"></i> Missing</span>
+                                {% elif img.alt_status == 'empty' %}
+                                <span class="text-neon-amber flex items-center gap-1 text-xs"><i
+                                        class="fa-solid fa-circle-info"></i> Empty</span>
+                                {% else %}
+                                <span class="text-gray-300 text-xs truncate max-w-[120px] block"
+                                    title="{{ img.alt_text }}">{{ img.alt_text[:25] }}{% if
+                                    img.alt_text|length
+                                    > 25
+                                    %}...{% endif %}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 px-4" data-value="{{ img.status_code or 0 }}">
+                                {% if img.status_code %}
+                                <span
+                                    class="text-xs px-2 py-0.5 rounded border {% if img.status_code == 200 %}bg-neon-green/10 text-neon-green border-neon-green/20{% else %}bg-neon-red/10 text-neon-red border-neon-red/20{% endif %}">{{
+                                    img.status_code }}</span>
+                                {% else %}
+                                <span class="text-xs text-gray-600">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 px-4 text-xs font-mono text-gray-400"
+                                data-value="{{ img.size_bytes or 0 }}">
+                                {{ img.size_formatted or '-' }}
+                            </td>
+                            <td class="py-2 px-4">
+                                <div class="flex flex-col gap-0.5">
+                                    {% if img.is_legacy_format %}
+                                    <span
+                                        class="text-[9px] text-neon-amber bg-neon-amber/10 px-1.5 py-0.5 rounded w-fit">WebP/AVIF</span>
+                                    {% endif %}
+                                    {% if img.lazy_load.status == 'warning' %}
+                                    <span
+                                        class="text-[9px] text-neon-cyan bg-neon-cyan/10 px-1.5 py-0.5 rounded w-fit">{{
+                                        'Lazy Load' if img.lazy_load.needs_lazy else 'Remove' }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div
+            class="flex flex-col items-center justify-center py-8 text-center bg-void/30 rounded-lg border border-white/5 border-dashed">
+            <i class="fa-solid fa-image text-gray-600 text-xl mb-2"></i>
+            <p class="text-gray-400 text-sm font-medium">No Images Found</p>
+            <p class="text-gray-500 text-xs mt-1">No &lt;img&gt; tags were detected on the site.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mt-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-video text-neon-purple"></i> Videos
+                <span class="text-xs text-gray-500 font-normal normal-case">({{
+                    data.results.media.videos.total }})</span>
+            </h3>
+            {% if data.results.media.videos.total > 0 %}
+            <div class="relative max-w-xs">
+                <input type="text" id="videosSearchInput" placeholder="Search videos..."
+                    oninput="filterTable('videosTableBody', this.value)"
+                    class="w-full bg-void/50 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-neon-purple/50 pl-8 placeholder-gray-600">
+                <i class="fa-solid fa-search absolute left-2.5 top-2 text-gray-500 text-xs"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if data.results.media.videos.total > 0 %}
+        <div class="max-h-96 overflow-y-auto rounded-lg border border-white/10 bg-void-dark/30">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" id="videosTable">
+                    <thead class="bg-void border-b border-white/10">
+                        <tr class="text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-4 text-left font-medium w-12"></th>
+                            <th class="py-3 px-4 text-left font-medium cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('videosTable', 1, 'string')">
+                                URL <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-20 cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('videosTable', 2, 'string')">
+                                Format <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('videosTable', 3, 'string')">
+                                Type & Properties <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-20 cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('videosTable', 4, 'number')">
+                                Status <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                            <th class="py-3 px-4 text-left font-medium w-24 cursor-pointer hover:text-neon-cyan transition-colors"
+                                onclick="sortTable('videosTable', 5, 'number')">
+                                Size <i class="fa-solid fa-sort ml-1 opacity-50"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="videosTableBody" class="divide-y divide-white/5">
+                        {% for video in data.results.media.videos.data %}
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="py-2 px-4">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-void-dark border border-white/10 flex items-center justify-center group-hover:border-neon-purple/30 transition-colors">
+                                    {% if video.type == 'embed' %}
+                                    {% if 'youtube' in video.src or 'youtu.be' in video.src %}
+                                    <i class="fa-brands fa-youtube text-red-500 text-lg"></i>
+                                    {% elif 'vimeo' in video.src %}
+                                    <i class="fa-brands fa-vimeo text-blue-400 text-lg"></i>
+                                    {% else %}
+                                    <i class="fa-solid fa-circle-play text-gray-400 text-lg"></i>
+                                    {% endif %}
+                                    {% else %}
+                                    <i class="fa-solid fa-file-video text-neon-green text-lg"></i>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="py-2 px-4">
+                                {% if video.title %}
+                                <p class="text-gray-200 font-medium truncate text-sm mb-0.5">{{
+                                    video.title
+                                    }}</p>
+                                {% endif %}
+                                <a href="{{ video.src_full or video.src }}" target="_blank"
+                                    class="text-xs font-mono text-gray-300 hover:text-neon-cyan truncate block max-w-xs"
+                                    title="{{ video.src }}">
+                                    {{ video.src[:60] }}{% if video.src|length > 60 %}...{% endif %}
+                                    <i class="fa-solid fa-external-link-alt ml-1 text-[10px] opacity-50"></i>
+                                </a>
+                            </td>
+                            <td class="py-2 px-4" data-value="{{ video.format|upper }}">
+                                <span
+                                    class="text-[10px] px-2 py-1 rounded bg-void-lighter text-gray-300 border border-white/10 uppercase font-bold">
+                                    {{ video.format|upper }}
+                                </span>
+                            </td>
+                            <td class="py-2 px-4">
+                                <div class="flex flex-wrap gap-1">
+                                    <span
+                                        class="text-[10px] px-1.5 py-0.5 rounded border border-white/10
+                                            {% if video.type == 'embed' %}bg-neon-blue/10 text-neon-blue{% else %}bg-neon-green/10 text-neon-green{% endif %}">
+                                        {{ 'HTML5' if video.type == 'html5' else 'EMBED' }}
+                                    </span>
+                                    {% if video.autoplay %}<span
+                                        class="text-[9px] px-1 py-0.5 rounded bg-gray-700/50 text-gray-400">Auto</span>{%
+                                    endif %}
+                                    {% if video.muted %}<span
+                                        class="text-[9px] px-1 py-0.5 rounded bg-gray-700/50 text-gray-400">Mute</span>{%
+                                    endif %}
+                                    {% if video.loop %}<span
+                                        class="text-[9px] px-1 py-0.5 rounded bg-gray-700/50 text-gray-400">Loop</span>{%
+                                    endif %}
+                                    {% if video.controls %}<span
+                                        class="text-[9px] px-1 py-0.5 rounded bg-gray-700/50 text-gray-400">Ctrl</span>{%
+                                    endif %}
+                                </div>
+                            </td>
+                            <td class="py-2 px-4" data-value="{{ video.status_code or 0 }}">
+                                {% if video.status_code %}
+                                <span class="text-xs px-2 py-0.5 rounded border
+                                        {% if video.status_code >= 200 and video.status_code < 300 %}bg-neon-green/10 text-neon-green border-neon-green/20
+                                        {% else %}bg-neon-red/10 text-neon-red border-neon-red/20{% endif %}">
+                                    {{ video.status_code }}
+                                </span>
+                                {% else %}
+                                <span class="text-xs text-gray-600">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-2 px-4 text-xs font-mono text-gray-400"
+                                data-value="{{ video.size_bytes or 0 }}">
+                                {{ video.size_formatted or '-' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div
+            class="flex flex-col items-center justify-center py-8 text-center bg-void/30 rounded-lg border border-white/5 border-dashed">
+            <i class="fa-solid fa-video text-gray-600 text-xl mb-2"></i>
+            <p class="text-gray-400 text-sm font-medium">No Videos Found</p>
+            <p class="text-gray-500 text-xs mt-1">No &lt;video&gt; or embed videos were detected on the site.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</section>
