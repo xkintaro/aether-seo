@@ -38,4 +38,5 @@ downloads/*
 renamerStart/*
 renamerFinish/*
 
+.agent/*
 .agents/*
